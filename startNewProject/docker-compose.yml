@@ -1,0 +1,27 @@
+version: "3.8"
+
+# Services
+services:
+  # Nginx Service
+  # http://localhost:3000 
+  nginx:
+    image: nginx:1.19
+    ports:
+      - 3000:80
+    volumes:
+      - ./:/var/www/php
+      - ./docker/nginx/conf.d:/etc/nginx/conf.d      
+    depends_on:
+      - php
+
+  # PHP 
+  php:
+    build: ./docker/php
+    working_dir: /var/www/php
+    volumes:
+      - ./:/var/www/php
+
+# Volumes
+volumes:
+  db_data:
+    driver: local
