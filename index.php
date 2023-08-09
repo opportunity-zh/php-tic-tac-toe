@@ -1,4 +1,4 @@
-<? session_start(); ?>
+<?php session_start(); ?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -69,111 +69,88 @@
     <div class="game-container">
         <h1 class="page-title">Tic Tac Toe</h1>
         <?php
-        // Initialize the game board if session is not set
-        if(!isset($_SESSION['board'])) {
-            $_SESSION['board'] = array(
-                array('-', '-', '-'),
-                array('-', '-', '-'),
-                array('-', '-', '-')
-            );
-        }
-     
+            require './includes/tools.php';
 
-        // Function to display the game board
-        function display_board() {
+            if(!isset($_SESSION['board'])) {
+                $_SESSION['board'] = array(
+                    array("-", "-", "-"),
+                    array("-", "-", "-"),
+                    array("-", "-", "-")
+                );
+            }
+            
+    
+           // prettyPrint($_SESSION);
+           $player = 'X';
+            if(isset($_GET['row']) && isset($_GET['col']) && isset($_GET['player'])) {
+                $newRow = $_GET['row'];
+                $newCol = $_GET['col'];
+                $player = $_GET['player'];
+
+                $_SESSION['board'][$newRow][$newCol] = $player;
+            }
+            // wechsle Spieler bei einem Get request
+            switch($player){
+                case 'X':
+                    $player = 'O';
+                    break;
+                case 'O':
+                    $player = 'X';
+                    break;
+                default:
+                    $player = 'X';
+            }
+
+            // Displays the board
             echo '<table>
                     <tbody>';
-            
-            // update the board after each move with the get request
-            if(isset($_GET['row']) && isset($_GET['col']) && isset($_GET['player'])) { // Check if we have all data in the url
-                // Get the column and row from the url
-                $newCol = $_GET['col'];
-                $newRow = $_GET['row'];
-               
-                // update the board in the session storage
-                $_SESSION['board'][$newCol][$newRow] = $_GET['player'];
-        
-                // switch the player after each move
-                switch($_GET['player']) {
-                    case 'X':
-                        $player = 'O';
-                        break;
-                    case 'O':
-                        $player = 'X';
-                        break;
-                    default:
-                        $player = 'X';
-                }    
-            } else {
-                $player = 'X';
-            }
-           
-            // Display the board
-            for ($i = 0; $i < 3; $i++) { // loop through the rows
-                echo "<tr>";
-                for ($j = 0; $j < 3; $j++) { // loop through the columns
-
-                    // Get the current symbol from the session storage array
-                    $symbol =  $_SESSION['board'][$i][$j];
+            for ($i=0; $i < 3; $i++){
+                echo '<tr>';
+                
+                for ($j=0; $j < 3; $j++){
                     
-                    if($symbol == '-') { // check if the default symbol is still there
-                        echo "<td><a href='index.php?row=$j&col=$i&player=$player'>$symbol</a></td>";
-                    }
-                    else { // if the symbol is not the default symbol, then display it without the link, so it can't be clicked
+                    $symbol = $_SESSION['board'][$i][$j];
+                    if($symbol == '-'){
+                        echo "<td><a href='index.php?row=$i&col=$j&player=$player'>$symbol</a></td>";
+                    }else {
                         echo "<td>$symbol</td>";
                     }
-
                 }
-                echo "</tr>";
+                echo'</tr>';
             }
-            echo '<tbody>
+            echo '</tbody>
             </table>';
-        }
 
-        // Display the board in the browser with  a function call
-        display_board();
-        outPutMessage();
-
-
-        // Function to check if there is a winner
-        function check_win($board, $player) {
-            // Check rows
-            for ($i = 0; $i < 3; $i++) {
-                if ($board[$i][0] == $player && $board[$i][1] == $player && $board[$i][2] == $player) {
+            function checkWin($board, $player){
+                // check rows
+                for($i=0; $i < 3; $i++){
+                    if($board[$i][0] == $player && $board[$i][1] == $player && $board[$i][2] == $player){
+                        return true;
+                    }
+                }
+                //check column
+                for($j=0; $j < 3; $j++){
+                    if($board[0][$j] == $player && $board[1][$j] == $player && $board[2][$j] == $player){
+                        return true;
+                    }
+                }
+                // check diagonal 
+                if($board[0][0] == $player && $board[1][1] == $player && $board[2][2] == $player){
                     return true;
                 }
-            }
-            // Check columns
-            for ($j = 0; $j < 3; $j++) {
-                if ($board[0][$j] == $player && $board[1][$j] == $player && $board[2][$j] == $player) {
+                if($board[0][2] == $player && $board[1][1] == $player && $board[2][0] == $player){
                     return true;
                 }
+                return false;
             }
-            // Check diagonals
-            if ($board[0][0] == $player && $board[1][1] == $player && $board[2][2] == $player) {
-                return true;
-            }
-            if ($board[0][2] == $player && $board[1][1] == $player && $board[2][0] == $player) {
-                return true;
-            }
-            return false;
-        }
 
-        function outPutMessage() {
-            if (check_win($_SESSION['board'], 'X')) {
-                echo "<h1>X wins!</h1>";
-            } else if(check_win($_SESSION['board'], 'O')) {
-                echo "<h1>O wins!</h1>";
-            } else {
-                if(!in_array('-', $_SESSION['board'][0]) && !in_array('-', $_SESSION['board'][1]) && !in_array('-', $_SESSION['board'][2])){
-                    echo "<h1>It's a tie!</h1>";
-                }
+            if(checkWin($_SESSION['board'], 'X')){
+                echo "<h2>X wins!</h2>";
+            }else if(checkWin($_SESSION['board'], 'O')){
+                echo "<h2>O wins!</h2>";
             }
-        }
-
-
 
         ?>
-        <a href="reset.php" class="btn-reset">Reset</a>
+        <a href="reset.php" class="btn-reset">reset</a>
     </div>
 </body>
