@@ -5,72 +5,16 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/css/style.css">
     <title>Tic Tac Toe</title>
-    <style>
-        table {
-            border-collapse: collapse;
-        }
-        td {
-            width: 150px;
-            height: 150px;
-            text-align: center;
-            vertical-align: middle;
-            border: 1px solid black;
-            font-size: 90px;
-            font-weight: bold;
-            cursor: pointer;
-        }
-        td a {
-            display: flex;
-            text-decoration: none;
-            color: black;
-            width: 100%;
-            height: 100%;
-            justify-content: center;
-            align-items: center;
-
-        }
-        td a:hover {
-            background: grey;
-        }
-        .btn-reset {
-            display: block;
-            padding: 10px 30px;
-            width: fit-content;
-            height: fit-content;
-
-            font-size: 24px;
-            font-weight: bold;
-            cursor: pointer;
-
-            border-radius: 9px;
-            text-decoration: none;
-            color: white;
-            background-color: grey;
-        }
-        .btn-reset:hover {
-            background-color: red;
-        }
-
-        .game-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-
-            gap: 30px;
-        }
-        .page-title {
-            font-size: 60px;
-        }
-    </style>
 </head>
 <body>
     <div class="game-container">
         <h1 class="page-title">Tic Tac Toe</h1>
         <?php
-            require './includes/tools.php';
+            require './includes/tools.php'; // needed for prettyPrint()
 
+            // if the session "board" is not set, create a new one with 3x3 fields
             if(!isset($_SESSION['board'])) {
                 $_SESSION['board'] = array(
                     array("-", "-", "-"),
@@ -79,41 +23,41 @@
                 );
             }
             
-    
            // prettyPrint($_SESSION);
-           $player = 'X';
-            if(isset($_GET['row']) && isset($_GET['col']) && isset($_GET['player'])) {
+            $playerTag = 'X';
+            if(isset($_GET['row']) && isset($_GET['col']) && isset($_GET['playertag'])) { // Grab the row, col and player from the URL
                 $newRow = $_GET['row'];
                 $newCol = $_GET['col'];
-                $player = $_GET['player'];
+                $playerTag = $_GET['playertag'];
 
-                $_SESSION['board'][$newRow][$newCol] = $player;
+                $_SESSION['board'][$newRow][$newCol] = $playerTag; // update the board with coordinates and player tag from the last move
             }
-            // wechsle Spieler bei einem Get request
-            switch($player){
+
+            // switch the player after each move
+            switch($playerTag){
                 case 'X':
-                    $player = 'O';
+                    $playerTag = 'O';
                     break;
                 case 'O':
-                    $player = 'X';
+                    $playerTag = 'X';
                     break;
                 default:
-                    $player = 'X';
+                    $playerTag = 'X';
             }
 
             // Displays the board
             echo '<table>
                     <tbody>';
-            for ($i=0; $i < 3; $i++){
+            for ($i=0; $i < 3; $i++){ // loop through the rows
                 echo '<tr>';
                 
-                for ($j=0; $j < 3; $j++){
+                for ($j=0; $j < 3; $j++){ // loop through the columns
                     
                     $symbol = $_SESSION['board'][$i][$j];
-                    if($symbol == '-'){
-                        echo "<td><a href='index.php?row=$i&col=$j&player=$player'>$symbol</a></td>";
+                    if($symbol == '-'){ // check if the default symbol is still there
+                        echo "<td><a href='index.php?row=$i&col=$j&playertag=$playerTag'>$symbol</a></td>"; // if the symbol is not the default symbol, then display it without the link, so it can't be clicked
                     }else {
-                        echo "<td>$symbol</td>";
+                        echo "<td>$symbol</td>"; // if the symbol is not the default symbol, then display it without the link, so it can't be clicked
                     }
                 }
                 echo'</tr>';
@@ -121,36 +65,37 @@
             echo '</tbody>
             </table>';
 
-            function checkWin($board, $player){
-                // check rows
-                for($i=0; $i < 3; $i++){
-                    if($board[$i][0] == $player && $board[$i][1] == $player && $board[$i][2] == $player){
+            function checkWin($board, $playerTag){ // check if the given player by the playerTag has won
+                
+                for($i=0; $i < 3; $i++){ // check rows
+                    if($board[$i][0] == $playerTag && $board[$i][1] == $playerTag && $board[$i][2] == $playerTag){ 
                         return true;
                     }
                 }
-                //check column
-                for($j=0; $j < 3; $j++){
-                    if($board[0][$j] == $player && $board[1][$j] == $player && $board[2][$j] == $player){
+               
+                for($j=0; $j < 3; $j++){  //check column
+                    if($board[0][$j] == $playerTag && $board[1][$j] == $playerTag && $board[2][$j] == $playerTag){
                         return true;
                     }
                 }
-                // check diagonal 
-                if($board[0][0] == $player && $board[1][1] == $player && $board[2][2] == $player){
+
+                 
+                if($board[0][0] == $playerTag && $board[1][1] == $playerTag && $board[2][2] == $playerTag){ // check diagonal from top left to bottom right
                     return true;
                 }
-                if($board[0][2] == $player && $board[1][1] == $player && $board[2][0] == $player){
+                if($board[0][2] == $playerTag && $board[1][1] == $playerTag && $board[2][0] == $playerTag){ // check diagonal from top right to bottom left
                     return true;
                 }
                 return false;
             }
 
-            if(checkWin($_SESSION['board'], 'X')){
+            if(checkWin($_SESSION['board'], 'X')){ // check if player has won and display a message
                 echo "<h2>X wins!</h2>";
             }else if(checkWin($_SESSION['board'], 'O')){
                 echo "<h2>O wins!</h2>";
             }
 
         ?>
-        <a href="reset.php" class="btn-reset">reset</a>
+        <a href="reset.php" class="btn-reset">reset</a> <!-- deletes the current session -->
     </div>
 </body>
