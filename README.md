@@ -1,10 +1,11 @@
 # Tic Tac Toe Game
+Build a tic tac toe game with php, get request and session storage.
 
-## Starter Project
+## Getting Started
+Try to work in the exercise without looking at the solution. If you get stuck, then check the files in the main folder.
 
-Starter Project for a PHP Tic Tac Toe Game
-
-## Docker for local web development
+## Docker local environment
+A docker build script is provided, but you can code without docker if you want.
 ### Content
 We have a docker-compose.yml file that will create the following containers:
 
