@@ -29,11 +29,22 @@
             
             */
 
+            /*
+                1. We need a session to store the board.
+                   Also make sure, that the board is not overwritten on each page reload. 
+                   Creat an if statement that checks if the session "board" is not set.
+            */
+
+            /*
+                2. We need a check if if we have get parameters in the URL.
+                   If we have, we update the board in the session with the coordinates and the player tag from the last move.
+            */
+
             echo '
             <table>
-                <tbody>
-                    <tr>
-                        <td>-</td><td>-</td><td>-</td>
+                <tbody> <!-- We need a first loop going trough the rows from the Session -->
+                    <tr> <!-- We display in each field, if not set, a link to the same page with the coordinates and the player tag. -->
+                        <td>-</td><td>-</td><td>-</td> <!-- We need a second loop going trough the columns -->
                     </tr>
                     <tr>
                         <td>-</td><td>-</td><td>-</td>
@@ -44,6 +55,13 @@
                 <tbody>
             </table>
             ';
+
+
+            /*
+                3. We need a function that checks if there is a winner.
+                   We need to check if there is a row, column or diagonal with the same player tag.
+                   If there is a winner, we display a message and a link to reset the game.
+            */
         ?>
     </div>
 </body>
